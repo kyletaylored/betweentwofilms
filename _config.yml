@@ -24,6 +24,14 @@ github_username: kyletaylored
 
 google_analytics: UA-36441409-6
 
+plugins:
+  - jekyll-seo-tag
+
+# SEO
+twitter: # - The following properties are available:
+  card: summary_large_image # - The site's default card type
+  username: kyletaylored
+
 # Build settings
 markdown: kramdown
 theme: minima
