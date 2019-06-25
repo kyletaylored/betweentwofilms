@@ -194,7 +194,7 @@ function getResultUrl(start, end, notfamous) {
   let lc = notfamous ? "1" : "50";
 
   const sparql =
-    "SELECT DISTINCT ?item ?itemLabel ?imdb ?wikipedia_article WHERE { \n" +
+    "SELECT DISTINCT ?item ?itemLabel ?imdb ?pubdate ?wikipedia_article WHERE { \n" +
       "?item wdt:P31 wd:Q11424. \n" +
       "?item wdt:P345 ?imdb. \n" +
       "?item wdt:P577 ?pubdate. \n" +

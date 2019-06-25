@@ -26,21 +26,50 @@ function processMovie(movie) {
   return movie;
 }
 
-function getMovies(movies) {
-  movies = filterMovies(movies);
+function getMovies(movies, date) {
+  movies = filterMovies(movies, date);
   for (movie in movies) {
     movies[movie] = processMovie(movies[movie]);
   }
   return movies;
 }
 
-function filterMovies(movies) {
+function cleanMovieList(movies, id) {
+  for (var i = 0; i < movies.length; i++) {
+    if (movies[i].item.value == id) {
+      movies[i].splice(i, i+1);
+    }
+  }
+  return movies;
+}
+
+function getBefore(movies, date) {
+  for (var i = 0; i < movies.length; i++) {
+    var pub = new Date(movies[i].pubdate.value);
+    if (moment(pub).isBefore(date)) {
+      return movies[i];
+    }
+  }
+  return null;
+}
+
+function getAfter(movies, date) {
+  for (var i = 0; i < movies.length; i++) {
+    var pub = new Date(movies[i].pubdate.value);
+    if (moment(pub).isAfter(date)) {
+      return movies[i];
+    }
+  }
+  return null;
+}
+
+function filterMovies(movies, date) {
   var results = [];
   movies = shuffle(movies);
-  // Loop twice.
-  for (var i = 0; i < 2; i++) {
-    results.push(movies.pop());
-  }
+
+  results.push(getBefore(movies, date));
+  results.push(getAfter(movies, date));
+
   return results;
 }
 
@@ -115,22 +144,23 @@ function resizePhoto(link) {
         $(".loading-wrapper").addClass("hidden");
         console.log("wikidata", data);
         // Get data.
-        var movies = getMovies(data.results.bindings);
+        var movies = getMovies(data.results.bindings, currentDate);
         console.log(movies);
         if (typeof movies !== "undefined") {
-          // var fightLink = fighter.wikipedia_article.value;
-          // var fightPic = resizePhoto(fighter.picture.value);
+
+          // Process movies
           for (var i = 0; i < movies.length; i++) {
             var title = movies[i].itemLabel.value;
             var link = "https://www.imdb.com/title/" + movies[i].imdb.value;
             var poster = movies[i].poster;
-            movies[i] = '<div class="thumbnail"><img alt="name" src="'+poster+'" style="display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a></h3></div></div>";
+            var date = moment(movies[i].pubdate.value).format("MMMM, YYYY");
+            movies[i] = '<div class="thumbnail text-center"><img alt="name" src="'+poster+'" style="display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a><br><small><em>("+date+")</em></small></h3></div></div>";
           }
 
           var markup = '<h2 class="answer">You&apos;re born between: </h2><br>';
           markup += "<div class='row'>"
           markup += "<div class='col-md-5'>"+movies[0]+"</div>"
-          markup += "<div class='col-md-2'><span class='text-large'><big>&amp;</big></span></div>"
+          markup += "<div class='col-md-2'><span class='text-large big-and'><big>&amp;</big></span></div>"
           markup += "<div class='col-md-5'>"+movies[1]+"</div>"
           markup += "</div>"
           $arena.html(markup);

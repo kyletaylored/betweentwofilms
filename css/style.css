@@ -16,6 +16,13 @@
   text-decoration: underline;
 }
 
+.big-and {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 22px;
+}
+
 .page-content {
   display: flex;
   flex-direction: column;
