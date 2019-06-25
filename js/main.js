@@ -6,8 +6,60 @@ function cleanFighters(fighters) {
   });
 }
 
-function formatDate(date) {
-  return date.getFullYear()
+/**
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+function processMovie(movie) {
+  movie.poster = getImdbPoster(movie.imdb.value);
+  return movie;
+}
+
+function getMovies(movies) {
+  movies = filterMovies(movies);
+  for (movie in movies) {
+    movies[movie] = processMovie(movies[movie]);
+  }
+  return movies;
+}
+
+function filterMovies(movies) {
+  var results = [];
+  movies = shuffle(movies);
+  // Loop twice.
+  for (var i = 0; i < 2; i++) {
+    results.push(movies.pop());
+  }
+  return results;
+}
+
+function getImdbPoster(id) {
+  return "https://img.omdbapi.com/?apikey=" + window.getImdb() + "&i=" + id;
+}
+
+/**
+ * Format date from birthday.
+ * @param  {date} date   [description]
+ * @param  {string} method [description]
+ * @param  {int} val    [description]
+ * @return {string}        [description]
+ */
+function formatDate(date, method, val) {
+  if (method == "add") {
+    return moment(date).add(val, "months").format("YYYY-MM-DD");
+  }
+  return moment(date).subtract(val, "months").format("YYYY-MM-DD");
 }
 
 /**
@@ -38,8 +90,8 @@ function resizePhoto(link) {
       console.log("notfamous", notfamous);
 
       var date =      new Date(date);
-      var startDate = new Date(date - 90 *86400000);
-      var endDate =   new Date(date + 90 *86400000);
+      var startDate = formatDate(date, "subtract", 6);
+      var endDate =   formatDate(date, "add", 6);
 
       console.log("date", date);
       console.log("start", startDate);
@@ -56,23 +108,26 @@ function resizePhoto(link) {
         url: getRes
       }).done(function (data) {
         $(".loading-wrapper").addClass("hidden");
-        console.log(data);
-        var results = cleanFighters(data.results.bindings);
-        console.log(results);
-        var fighter = results[Math.floor(Math.random() * results.length)];
-        if (typeof fighter !== "undefined") {
-          console.log(fighter);
-          var fightLink = fighter.wikipedia_article.value;
-          var fightPic = resizePhoto(fighter.picture.value);
+        console.log("wikidata", data);
+        // Get data.
+        var movies = getMovies(data.results.bindings);
+        console.log(movies);
+        if (typeof movies !== "undefined") {
+          // var fightLink = fighter.wikipedia_article.value;
+          // var fightPic = resizePhoto(fighter.picture.value);
+          for (var i = 0; i < movies.length; i++) {
+            var title = movies[i].itemLabel.value;
+            var link = "https://www.imdb.com/title/" + movies[i].imdb.value;
+            var poster = movies[i].poster;
+            movies[i] = '<div class="thumbnail"><img alt="name" src="'+poster+'" style="height: 200px; width: auto; display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a></h3></div></div>";
+          }
 
-          var markup =
-            '<h2 class="answer">You&apos;re fighting: </h2><br><div class="thumbnail"><img alt="name" src="' +
-            fightPic +
-            '" style="height: 200px; width: auto; display: block;"><div class="caption"><h3><a target="_blank" href="' +
-            fightLink +
-            '">' +
-            fighter.name.value +
-            "</a></h3></div></div>";
+          var markup = '<h2 class="answer">You&apos;re born between: </h2><br>';
+          markup += "<div class='row'>"
+          markup += "<div class='col-md-5'>"+movies[0]+"</div>"
+          markup += "<div class='col-md-2'><span class='text-large'><big>&amp;</big></span></div>"
+          markup += "<div class='col-md-5'>"+movies[1]+"</div>"
+          markup += "</div>"
           $arena.html(markup);
           $("html, body").animate({
             scrollTop: $(document).height()
