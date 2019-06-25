@@ -56,10 +56,14 @@ function getImdbPoster(id) {
  * @return {string}        [description]
  */
 function formatDate(date, method, val) {
+  val = val || 3; // Default to 3 months.
   if (method == "add") {
     return moment(date).add(val, "months").format("YYYY-MM-DD");
   }
-  return moment(date).subtract(val, "months").format("YYYY-MM-DD");
+  if (method == "subtract") {
+    return moment(date).subtract(val, "months").format("YYYY-MM-DD");
+  }
+  return moment(date).format("YYYY-MM-DD");
 }
 
 /**
@@ -90,10 +94,11 @@ function resizePhoto(link) {
       console.log("notfamous", notfamous);
 
       var date =      new Date(date);
+      var currentDate = formatDate(date);
       var startDate = formatDate(date, "subtract", 6);
       var endDate =   formatDate(date, "add", 6);
 
-      console.log("date", date);
+      console.log("date", currentDate);
       console.log("start", startDate);
       console.log("end", endDate);
 
@@ -119,7 +124,7 @@ function resizePhoto(link) {
             var title = movies[i].itemLabel.value;
             var link = "https://www.imdb.com/title/" + movies[i].imdb.value;
             var poster = movies[i].poster;
-            movies[i] = '<div class="thumbnail"><img alt="name" src="'+poster+'" style="height: 200px; width: auto; display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a></h3></div></div>";
+            movies[i] = '<div class="thumbnail"><img alt="name" src="'+poster+'" style="display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a></h3></div></div>";
           }
 
           var markup = '<h2 class="answer">You&apos;re born between: </h2><br>';
