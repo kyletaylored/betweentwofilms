@@ -30,7 +30,7 @@ layout: default
 		</div>
     </div>
     <div class="loading-wrapper hidden row">
-        <div class="loading col-md-6 col-md-offset-3"> 🥊</div>
+        <div class="loading col-md-6 col-md-offset-3">🎥</div>
         <div class="col-md-6 col-md-offset-3">
             <br> <em>retrieving birth records...</em>
         </div>
