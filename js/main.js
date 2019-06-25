@@ -5,6 +5,11 @@ function cleanFighters(fighters) {
     }
   });
 }
+
+function formatDate(date) {
+  return date.getFullYear()
+}
+
 /**
  * Get a smaller version of the photo because some of them are large.
  * @param  {string} link Path to the photo.
@@ -19,7 +24,7 @@ function resizePhoto(link) {
   $(document).ready(function () {
     // Populate years.
     $(function () {
-      $('#datetimepicker').datetimepicker({format: 'LT'});
+      $('#datetimepicker').datetimepicker({format: 'L'});
     });
 
     $("#movie-form").submit(function (event) {
@@ -32,11 +37,19 @@ function resizePhoto(link) {
       console.log("year", date);
       console.log("notfamous", notfamous);
 
+      var date =      new Date(date);
+      var startDate = new Date(date - 90 *86400000);
+      var endDate =   new Date(date + 90 *86400000);
+
+      console.log("date", date);
+      console.log("start", startDate);
+      console.log("end", endDate);
+
       // Empty arena.
       $arena.html("");
 
       $(".loading-wrapper").removeClass("hidden");
-      var getRes = getResultUrl(date, notfamous);
+      var getRes = getResultUrl(startDate, endDate, notfamous);
       console.log(getRes);
 
       $.ajax({

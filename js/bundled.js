@@ -185,55 +185,32 @@ const wdk = require("wikibase-sdk")({
 
 /**
  * Returns the URL to fetch for the JSON results from Wikimedia
- * @param {int} year The year you were born.
- * @param {string} gender Your identified gender.
+ * @param {string} date The birth date.
+ * @param {boolean} notfamous If you don't care about famous movies.
+ * @param {int} range The number of months to give a range. 3 by default.
  */
-function getResultUrl(year, gender, notfamous) {
-  // Define gender codes
-  let g = {
-    male: "Q6581097",
-    female: "Q6581072",
-    intersex: "Q1097630",
-    "non-binary": "Q48270",
-    "transgender female": "Q1052281",
-    "transgender male": "Q2449503"
-  };
-
-  // Map sex to code.
-  let genderQuery = "# gender query \n";
-  let newGen = g[gender];
-  if (typeof newGen !== "undefined") {
-    genderQuery = `wdt:P21 wd:${newGen} ; \n`;
-  }
-
+function getResultUrl(date, notfamous, range) {
+  range = range || 3;
   // Check for famous people.
   let lc = notfamous ? "1" : "50";
 
-  // Update year
-  year = year - 31;
+  // Create start/end dates.
+
 
   const sparql =
-    "SELECT ?name ?picture ?born ?died ?wikipedia_article WHERE { \n" +
-    "?person wdt:P31 wd:Q5; \n" +
-    "wdt:P18 ?picture; \n" +
-    genderQuery +
-    "wdt:P569 ?born . \n" +
-    "OPTIONAL { ?person wdt:P570 ?died . } " +
-    'FILTER((?born >= "' +
-    year +
-    '-01-01T00:00:00Z"^^xsd:dateTime) && (?born <= "' +
-    year +
-    '-12-31T23:59:59Z"^^xsd:dateTime)) \n' +
-    "?person wikibase:sitelinks ?linkcount . \n" +
-    "FILTER(?linkcount > " +
-    lc +
-    " ) \n" +
-    "?person rdfs:label ?name . \n" +
-    'FILTER((LANG(?name)) = "en") \n' +
-    "?wikipedia_article schema:about ?person; schema:isPartOf <https://en.wikipedia.org/> . \n" +
+    "SELECT DISTINCT ?item ?itemLabel ?picture ?pubdate ?wikipedia_article WHERE { \n" +
+      "?item wdt:P31 wd:Q11424. \n" +
+      "?item wdt:P18 ?picture. \n" +
+      "?item wdt:P577 ?pubdate. \n" +
+      'FILTER((?pubdate >= "'+startDate+'T00:00:00Z"^^xsd:dateTime) && (?pubdate <= "'+endDate+'T00:00:00Z"^^xsd:dateTime)) \n' +
+      "?item wikibase:sitelinks ?linkcount . \n" +
+      "FILTER (?linkcount > " + lc + ") . \n" +
+      'SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". } \n' +
+      "?wikipedia_article schema:about ?item . \n" +
+      "?wikipedia_article schema:isPartOf <https://en.wikiquote.org/> . \n" +
     "} \n" +
-    "ORDER BY DESC (?linkcount) \n" +
-    "LIMIT 25";
+    "ORDER BY DESC(?linkcount) \n" +
+    "LIMIT 50";
 
   return wdk.sparqlQuery(sparql);
 }
