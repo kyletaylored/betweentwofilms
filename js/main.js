@@ -11,14 +11,14 @@ function cleanFighters(fighters) {
  * @param {Array} a items An array containing the items.
  */
 function shuffle(a) {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+  var j, x, i;
+  for (i = a.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    x = a[i];
+    a[i] = a[j];
+    a[j] = x;
+  }
+  return a;
 }
 
 function processMovie(movie) {
@@ -37,7 +37,7 @@ function getMovies(movies, date) {
 function cleanMovieList(movies, id) {
   for (var i = 0; i < movies.length; i++) {
     if (movies[i].item.value == id) {
-      movies[i].splice(i, i+1);
+      movies[i].splice(i, i + 1);
     }
   }
   return movies;
@@ -51,7 +51,9 @@ function getBefore(movies, date) {
       list[i] = moment(date).diff(pub);
     }
   }
-  var min = Object.keys(list).reduce(function(a, b){ return list[a] < list[b] ? a : b });
+  var min = Object.keys(list).reduce(function (a, b) {
+    return list[a] < list[b] ? a : b
+  });
   return movies[min];
 }
 
@@ -63,7 +65,9 @@ function getAfter(movies, date) {
       list[i] = moment(date).diff(pub);
     }
   }
-  var max = Object.keys(list).reduce(function(a, b){ return list[a] > list[b] ? a : b });
+  var max = Object.keys(list).reduce(function (a, b) {
+    return list[a] > list[b] ? a : b
+  });
   return movies[max];
 }
 
@@ -105,7 +109,7 @@ function formatDate(date, method, val) {
  * @return {string}      Updated path to photo.
  */
 function resizePhoto(link) {
-  return "https://commons.wikimedia.org/w/thumb.php?width=500&f=" + link.substring(link.lastIndexOf('/')+1);
+  return "https://commons.wikimedia.org/w/thumb.php?width=500&f=" + link.substring(link.lastIndexOf('/') + 1);
 }
 
 (function ($) {
@@ -113,7 +117,9 @@ function resizePhoto(link) {
   $(document).ready(function () {
     // Populate years.
     $(function () {
-      $('#datetimepicker').datetimepicker({format: 'L'});
+      $('#datetimepicker').datetimepicker({
+        format: 'L'
+      });
     });
 
     $("#movie-form").submit(function (event) {
@@ -126,10 +132,10 @@ function resizePhoto(link) {
       console.log("year", date);
       console.log("notfamous", notfamous);
 
-      var date =      new Date(date);
+      var date = new Date(date);
       var currentDate = formatDate(date);
       var startDate = formatDate(date, "subtract", 6);
-      var endDate =   formatDate(date, "add", 6);
+      var endDate = formatDate(date, "add", 6);
 
       console.log("date", currentDate);
       console.log("start", startDate);
@@ -158,14 +164,14 @@ function resizePhoto(link) {
             var link = "https://www.imdb.com/title/" + movies[i].imdb.value;
             var poster = movies[i].poster;
             var date = moment(movies[i].pubdate.value).format("MMMM D, YYYY");
-            movies[i] = '<div class="thumbnail text-center"><img alt="name" src="'+poster+'" style="display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a><br><small><em>("+date+")</em></small></h3></div></div>";
+            movies[i] = '<div class="thumbnail text-center"><img alt="name" src="' + poster + '" style="display: block;"><div class="caption"><h3><a target="_blank" href="' + link + '">' + title + "</a><br><small><em>(" + date + ")</em></small></h3></div></div>";
           }
 
           var markup = '<h2 class="answer">You&apos;re born between: </h2><br>';
-          markup += "<div class='row'>"
-          markup += "<div class='col-md-5'>"+movies[0]+"</div>"
-          markup += "<div class='col-md-2'><span class='text-large big-and'><big>&amp;</big></span></div>"
-          markup += "<div class='col-md-5'>"+movies[1]+"</div>"
+          markup += "<div class='flex-wrapper row'>"
+          markup += "<div class='col-md-5'>" + movies[0] + "</div>"
+          markup += "<div class='amp-wrapper col-md-2'><span class='text-large big-and'><big>&amp;</big></span></div>"
+          markup += "<div class='col-md-5'>" + movies[1] + "</div>"
           markup += "</div>"
           $arena.html(markup);
           $("html, body").animate({

@@ -11,16 +11,31 @@
   padding: 1em;
   color: white;
 }
+
 .footer-bottom a {
   color: white;
   text-decoration: underline;
 }
 
+.flex-wrapper {
+  display: flex;
+}
+
+.amp-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
 .big-and {
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 22px;
+  align-self: center;
+  font-size: 32px;
+  font-family: Baskerville, "Times New Roman", Arial;
+  font-style: italic;
+  opacity: .7;
+}
+
+.thumbnail {
+  margin-bottom: 0;
 }
 
 .page-content {
