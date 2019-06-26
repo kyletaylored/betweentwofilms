@@ -35,7 +35,8 @@
 }
 
 .thumbnail {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
+  /* don't judge my !important use, i can see you judging me */
 }
 
 .page-content {
