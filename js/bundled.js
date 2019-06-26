@@ -191,7 +191,7 @@ const wdk = require("wikibase-sdk")({
  */
 function getResultUrl(start, end, notfamous) {
   // Check for famous people.
-  let lc = notfamous ? "1" : "50";
+  let lc = notfamous ? "1" : "25";
 
   const sparql =
     "SELECT DISTINCT ?item ?itemLabel ?imdb ?pubdate ?wikipedia_article WHERE { \n" +
