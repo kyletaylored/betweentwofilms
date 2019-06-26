@@ -21,7 +21,7 @@ layout: default
     <div class="row">
     	<div class="custom-control custom-checkbox">
     		<input type="checkbox" class="custom-control-input" id="notfamous">
-    		<label class="custom-control-label" for="notfamous"><em style="font-weight: normal"> (Include less famous movies?)</em></label>
+    		<label class="custom-control-label" for="notfamous"><em style="font-weight: normal"> Include less famous movies?</em></label>
     	</div>
     </div>
     <div class="row mb-3">
