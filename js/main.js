@@ -44,23 +44,27 @@ function cleanMovieList(movies, id) {
 }
 
 function getBefore(movies, date) {
+  var list = {};
   for (var i = 0; i < movies.length; i++) {
     var pub = new Date(movies[i].pubdate.value);
     if (moment(pub).isBefore(date)) {
-      return movies[i];
+      list[i] = moment(date).diff(pub);
     }
   }
-  return null;
+  var min = Object.keys(list).reduce(function(a, b){ return list[a] < list[b] ? a : b });
+  return movies[min];
 }
 
 function getAfter(movies, date) {
+  var list = {};
   for (var i = 0; i < movies.length; i++) {
     var pub = new Date(movies[i].pubdate.value);
     if (moment(pub).isAfter(date)) {
-      return movies[i];
+      list[i] = moment(date).diff(pub);
     }
   }
-  return null;
+  var max = Object.keys(list).reduce(function(a, b){ return list[a] > list[b] ? a : b });
+  return movies[max];
 }
 
 function filterMovies(movies, date) {
@@ -153,7 +157,7 @@ function resizePhoto(link) {
             var title = movies[i].itemLabel.value;
             var link = "https://www.imdb.com/title/" + movies[i].imdb.value;
             var poster = movies[i].poster;
-            var date = moment(movies[i].pubdate.value).format("MMMM, YYYY");
+            var date = moment(movies[i].pubdate.value).format("MMMM D, YYYY");
             movies[i] = '<div class="thumbnail text-center"><img alt="name" src="'+poster+'" style="display: block;"><div class="caption"><h3><a target="_blank" href="'+link+'">'+title+"</a><br><small><em>("+date+")</em></small></h3></div></div>";
           }
 
