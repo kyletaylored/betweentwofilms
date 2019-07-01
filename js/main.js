@@ -1,11 +1,3 @@
-function cleanFighters(fighters) {
-  return fighters.filter(element => {
-    if (!element.hasOwnProperty("died")) {
-      return element;
-    }
-  });
-}
-
 /**
  * Shuffles array in place.
  * @param {Array} a items An array containing the items.
@@ -21,11 +13,22 @@ function shuffle(a) {
   return a;
 }
 
+/**
+ * Add a movie poster to the movie object.
+ * @param  {Object} movie The selected movie object.
+ * @return {Object}       The selected movie object with IMDB poster.
+ */
 function processMovie(movie) {
   movie.poster = getImdbPoster(movie.imdb.value);
   return movie;
 }
 
+/**
+ * Returns array that contains 2 movies, before and after.
+ * @param  {Array} movies A list of movies from Wikidata.
+ * @param  {Date}  date   The birthday to filter around.
+ * @return {Array}        A list of 2 movies, before and after.
+ */
 function getMovies(movies, date) {
   movies = filterMovies(movies, date);
   for (movie in movies) {
@@ -34,63 +37,84 @@ function getMovies(movies, date) {
   return movies;
 }
 
-function cleanMovieList(movies, id) {
-  for (var i = 0; i < movies.length; i++) {
-    if (movies[i].item.value == id) {
-      movies[i].splice(i, i + 1);
-    }
-  }
-  return movies;
-}
-
-function getBefore(movies, date) {
+/**
+ * Get the movie before your birthday.
+ * @param  {Array} movies   A list of movie objects
+ * @param  {Date} date      Your birthday in a Date object.
+ * @param  {Object} exclude An object to exclude to prevent duplicates.
+ * @return {Object}         The selected movie.
+ */
+function getBefore(movies, date, exclude) {
   var list = {};
   for (var i = 0; i < movies.length; i++) {
     var pub = new Date(movies[i].pubdate.value);
+    // Skip same movies.
+    if (exclude != null && exclude.imdb.value == movies[i].imdb.value) {
+      continue;
+    }
+    // Check if movie date is before birthday.
     if (moment(pub).isBefore(date)) {
       list[i] = moment(date).diff(pub);
     }
   }
-  var min = Object.keys(list).reduce(function (a, b) {
-    return list[a] < list[b] ? a : b
-  });
+  var min = Object.keys(list).reduce(function(a, b){ return list[a] < list[b] ? a : b });
   return movies[min];
 }
 
-function getAfter(movies, date) {
+/**
+ * Get the movie after your birthday.
+ * @param  {Array} movies   A list of movie objects
+ * @param  {Date} date      Your birthday in a Date object.
+ * @param  {Object} exclude An object to exclude to prevent duplicates.
+ * @return {Object}         The selected movie.
+ */
+function getAfter(movies, date, exclude) {
   var list = {};
   for (var i = 0; i < movies.length; i++) {
     var pub = new Date(movies[i].pubdate.value);
+    // Skip same movies.
+    if (exclude != null && exclude.imdb.value == movies[i].imdb.value) {
+      continue;
+    }
+    // Check if movie date is after birthday.
     if (moment(pub).isAfter(date)) {
       list[i] = moment(date).diff(pub);
     }
   }
-  var max = Object.keys(list).reduce(function (a, b) {
-    return list[a] > list[b] ? a : b
-  });
+  var max = Object.keys(list).reduce(function(a, b){ return list[a] > list[b] ? a : b });
   return movies[max];
 }
 
+/**
+ * Shuffles and selects 2 movies.
+ * @param  {Array} movies A list of movies
+ * @param  {Date} date    The birthday to filter around.
+ * @return {Array}        An array of 2 movies.
+ */
 function filterMovies(movies, date) {
   var results = [];
   movies = shuffle(movies);
-
-  results.push(getBefore(movies, date));
-  results.push(getAfter(movies, date));
-
+  var before = getBefore(movies, date);
+  var after = getAfter(movies, date, before);
+  results.push(before, after);
   return results;
 }
 
+/**
+ * Adds poster link to movie object.
+ * @param  {String} id The IMDB ID of the movie.
+ * @return {String}    A link to the movie poster.
+ */
 function getImdbPoster(id) {
   return "https://img.omdbapi.com/?apikey=" + window.getImdb() + "&i=" + id;
 }
 
 /**
  * Format date from birthday.
- * @param  {date} date   [description]
- * @param  {string} method [description]
- * @param  {int} val    [description]
- * @return {string}        [description]
+ * @param  {Date} date   [description]
+ * @param  {String} method [description]
+ * @param  {Integer} val    [description]
+ * @return {String}        [description]
  */
 function formatDate(date, method, val) {
   val = val || 3; // Default to 3 months.
@@ -103,15 +127,7 @@ function formatDate(date, method, val) {
   return moment(date).format("YYYY-MM-DD");
 }
 
-/**
- * Get a smaller version of the photo because some of them are large.
- * @param  {string} link Path to the photo.
- * @return {string}      Updated path to photo.
- */
-function resizePhoto(link) {
-  return "https://commons.wikimedia.org/w/thumb.php?width=500&f=" + link.substring(link.lastIndexOf('/') + 1);
-}
-
+// Main function
 (function ($) {
 
   $(document).ready(function () {
@@ -168,7 +184,7 @@ function resizePhoto(link) {
           }
 
           var markup = '<h2 class="answer">You&apos;re born between: </h2><br>';
-          markup += "<div class='flex-wrapper row'>"
+          markup += "<div class='flex-wrapper row' style='margin-bottom:1em'>"
           markup += "<div class='col-md-5'>" + movies[0] + "</div>"
           markup += "<div class='amp-wrapper col-md-2'><span class='text-large big-and'><big>&amp;</big></span></div>"
           markup += "<div class='col-md-5'>" + movies[1] + "</div>"
